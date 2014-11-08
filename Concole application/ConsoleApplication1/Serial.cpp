@@ -72,6 +72,7 @@ int writeCom(HANDLE hCom, char c) {
 //		exit(-1);
 		return false;
 	}
+	return true;
 }
 
 int writeComNumber(HANDLE hCom, UINT8 c) {
@@ -83,6 +84,61 @@ int writeComNumber(HANDLE hCom, UINT8 c) {
 //		MessageBoxA(0, "Fout: De seriële poort kan niet beschreven worden!", "Fout", MB_OK | MB_ICONEXCLAMATION);
 //		exit(-1);
 		return false;
+	}
+	return true;
+}
+
+HANDLE detectPort(COMMTIMEOUTS timeouts){
+
+	HANDLE comp = 0;
+	int portnr = 0;
+	char in;
+	bool x = false;
+	bool y = false;
+	
+	SYSTEMTIME st_start, st_end;
+
+	while (y == false){
+		while (x == false){
+			if (portnr == 255){
+				MessageBoxA(0, "Fout: De seriële poort kan niet gevonden worden!", "Fout", MB_OK | MB_ICONEXCLAMATION);
+				exit(-1);
+			}
+			portnr++;
+			if ((comp = initCom(portnr)) == 0){
+				x = false;
+				std::cout << "Kan port niet openen" << std::endl;
+			}
+			else {
+				x = true;
+			}
+		}
+		std::cout << "port open" << std::endl;
+		if (!SetCommTimeouts(comp, &timeouts)){
+			std::cout << "time out error" << std::endl;
+			fflush(stdin);
+			getchar();
+		}
+		GetSystemTime(&st_start);
+		GetSystemTime(&st_end);
+		if ((st_start.wMilliseconds + 7) >= 993){
+			st_start.wMilliseconds = 7;
+		}
+		writeCom(comp, 'X');
+		while ((st_end.wMilliseconds < st_start.wMilliseconds + 7) && y != true){
+			in = readCom(comp);
+			if (in == 'Z'){
+				y = true;
+				return comp;
+			}
+			GetSystemTime(&st_end);
+		}
+		if (y == false){
+			std::cout << "fout" << std::endl;
+			closeCom(comp);
+			y = false;
+			x = false;
+		}
 	}
 }
 

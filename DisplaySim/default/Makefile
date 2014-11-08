@@ -37,7 +37,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = DisplaySim.o 
+OBJECTS = DisplaySim.o lcd.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -47,6 +47,9 @@ all: $(TARGET) DisplaySim.hex DisplaySim.eep DisplaySim.lss size
 
 ## Compile
 DisplaySim.o: ../DisplaySim.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+
+lcd.o: ../lcd.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link

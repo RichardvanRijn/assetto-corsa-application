@@ -19,13 +19,16 @@
 
 #include <time.h>
 
-#include <sstream> // for ostringstream
+#include <sstream>
 #include <string>
+
+#include "stdafx.h"
+
+#include <iostream>
+
+#include <conio.h>
 
 
 //#include <ctime>
-
-
-
 
 // TODO: reference additional headers your program requires here
