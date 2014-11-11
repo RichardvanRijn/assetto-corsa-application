@@ -13,7 +13,7 @@ DisplaySim.o: ../DisplaySim.c \
   c:/winavr-20090313/lib/gcc/../../avr/include/avr/eeprom.h \
   c:\winavr-20090313\bin\../lib/gcc/avr/4.3.2/include/stddef.h \
   c:/winavr-20090313/lib/gcc/../../avr/include/avr/pgmspace.h \
-  c:\winavr-20090313\bin\../lib/gcc/avr/4.3.2/include/stdbool.h ../lcd.h
+  c:\winavr-20090313\bin\../lib/gcc/avr/4.3.2/include/stdbool.h
 
 c:/winavr-20090313/lib/gcc/../../avr/include/avr/io.h:
 
@@ -44,5 +44,3 @@ c:\winavr-20090313\bin\../lib/gcc/avr/4.3.2/include/stddef.h:
 c:/winavr-20090313/lib/gcc/../../avr/include/avr/pgmspace.h:
 
 c:\winavr-20090313\bin\../lib/gcc/avr/4.3.2/include/stdbool.h:
-
-../lcd.h:

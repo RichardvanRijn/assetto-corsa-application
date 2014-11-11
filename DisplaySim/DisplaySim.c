@@ -3,7 +3,6 @@
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
 #include <stdbool.h>
-#include "lcd.h"
 
 char d = 0;
 bool x = false;
@@ -61,13 +60,6 @@ void zendentekst(void){
 
 int main(void)
 {
-    lcd_init();
-    lcd_cursor(false, false); //  cursor uit 
-	lcd_home();
-	lcd_goto(1, 0);
-	snprintf(buffer, sizeof buffer, " Assetto  Corsa");
-	lcd_puts(buffer);
-	lcd_home();
 	
 	DDRA = 0xff;
 	DDRB = 0x00;
@@ -75,24 +67,21 @@ int main(void)
 	sei();
 	while(true){
 		while (d == 0){
-			if (PINB & (1<<6))
+			if (~PINB & (1<<0))
 			{
 				snprintf(buffer, sizeof buffer, "A");
 				zendentekst();
-				while (PINB & (1<<6))
-				{
+				while (~PINB & (1<<0)){
 				}
 			}
-			else if (PINB & (1<<7))
+			else if (~PINB & (1<<7))
 			{
 				snprintf(buffer, sizeof buffer, "B");
 				zendentekst();
-				while (PINB & (1<<7))
-				{
+				while (~PINB & (1<<7)){
 				}
 			}
 		}
-
 			cli();
 			if (d == 'X')
 			{
@@ -110,11 +99,7 @@ int main(void)
 				RPM = waarde;
 				waarde = 0;
 				d = 0;
-//				PORTA = RPM;
-
-				lcd_home();
-				snprintf(buffer, sizeof buffer, "RPM = %d     ", RPM);
-				lcd_puts(buffer); 
+				PORTA = RPM;
 			}
 			else if (d == 'B')
 			{
@@ -126,11 +111,7 @@ int main(void)
 				speed = waarde;
 				waarde = 0;
 				d = 0;
-//				PORTA = speed;
-				
-				lcd_home();
-				snprintf(buffer, sizeof buffer, "Speed = %d     ", speed);
-				lcd_puts(buffer); 
+				PORTA = speed;
 			}
 		sei();
 	}
