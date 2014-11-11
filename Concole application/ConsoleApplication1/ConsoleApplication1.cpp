@@ -10,8 +10,8 @@
 
 using namespace std;
 
-HANDLE hMapFile;
-unsigned char* mapFileBuffer;
+//HANDLE hMapFile;
+//unsigned char* mapFileBuffer;
 
 template <typename T, unsigned S>
 inline unsigned arraysize(const T(&v)[S])
@@ -82,13 +82,19 @@ void dismiss(SMElement element)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	UINT8 i = 0;
-	int portnr = 0;
-	int zendbuffer = 0;
+//	int portnr = 0;
 	char in;
+	int zendbuffer = 0;
 	char buffer = 'A';
-	bool x = false;
-	bool y = false;
+//	bool x = false;
+//	bool y = false;
+	
+//	SYSTEMTIME st_start, st_end;
+	HANDLE comp = 0;
+
+	initPhysics();
+	initGraphics();
+	initStatic();
 
 	COMMTIMEOUTS timeouts;
 	timeouts.ReadIntervalTimeout = 1;
@@ -97,68 +103,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	timeouts.WriteTotalTimeoutMultiplier = 1;
 	timeouts.WriteTotalTimeoutConstant = 1;
 
-	SYSTEMTIME st_start, st_end;
+	comp = detectPort(timeouts);
 
-	initPhysics();
-	initGraphics();
-	initStatic();
-
-	HANDLE comp = 0;
-
-	while (y == false){
-		while (x == false){
-//			cout << "insert comPortNumber" << endl;
-//			fflush(stdin);
-//			cin >> portnr;
-			if (portnr == 255){
-				MessageBoxA(0, "Fout: De port kan niet gevonden worden", "Fout", MB_OK | MB_ICONEXCLAMATION);
-				exit(-1);
-			}
-			portnr++;
-			if ((comp = initCom(portnr)) == 0){
-				x = false;
-				cout << "Kan port niet openen" << endl;
-			}
-			else {
-				x = true;
-			}
-		}
-		cout << "port open" << endl;
-		if (!SetCommTimeouts(comp, &timeouts)){
-			cout << "time out error" << endl;
-			fflush(stdin);
-			getchar();
-		}
-		GetSystemTime(&st_start);
-		GetSystemTime(&st_end);
-		if ((st_start.wMilliseconds + 7) >= 993){
-			st_start.wMilliseconds = 7;
-		}
-//		cout << st_start.wMilliseconds << " " << st_start.wMilliseconds + 7 << endl;
-		writeCom(comp, 'X');
-		while ((st_end.wMilliseconds < st_start.wMilliseconds + 7) && y != true){
-			in = readCom(comp);
-			if (in == 'Z'){
-				y = true;
-			}
-			GetSystemTime(&st_end);
-//			cout << st_end.wMilliseconds << endl;
-		}
-		if (y == false){
-			cout << "fout" << endl;
-			closeCom(comp);
-			y = false;
-			x = false;
-		}
-	}
-			cout << "goed" << endl;
-			fflush(stdin);
-			getchar();
-	while(true)
+	cout << "goed" << endl;
+	fflush(stdin);
+	getchar();
+	while (!_kbhit())
 	{
-		SPageFilePhysics* pf = (SPageFilePhysics*)m_physics.mapFileBuffer;
-		SPageFileGraphic* pf = (SPageFileGraphic*)m_graphics.mapFileBuffer;
-		SPageFileStatic* pf = (SPageFileStatic*)m_static.mapFileBuffer;
+		SPageFilePhysics* Ph = (SPageFilePhysics*)m_physics.mapFileBuffer;
+		SPageFileGraphic* Gr = (SPageFileGraphic*)m_graphics.mapFileBuffer;
+		SPageFileStatic* St = (SPageFileStatic*)m_static.mapFileBuffer;
 
 		in = readCom(comp);
 
@@ -167,25 +121,28 @@ int _tmain(int argc, _TCHAR* argv[])
 			in = 0;
 		}
 
-
 		switch (buffer){
 		case 'A':
+			cout << "Toeren " << Ph->rpms << " Rpm" << endl;
 			writeCom(comp, 'A');
-			//zendbuffer = pf->rpms;
-			zendbuffer = 258;
+			zendbuffer = Ph->rpms;
+			//zendbuffer = 258;
+			cout << zendbuffer << endl;
 			writeComNumber(comp, zendbuffer);
 			zendbuffer = (zendbuffer >> 8);
+			cout << zendbuffer << endl;
 			writeComNumber(comp, zendbuffer);
-			cout << "Toeren " << pf->rpms << " Rpm" << endl;
 			break;
 		case 'B':
+			cout << "Snelheid " << Ph->speedKmh << " Kmh" << endl;
 			writeCom(comp, 'B');
-			//zendbuffer = pf->speedKmh;
-			zendbuffer = 384;
+			zendbuffer = Ph->speedKmh;
+			//zendbuffer = 384;
+			cout << zendbuffer << endl;
 			writeComNumber(comp, zendbuffer);
 			zendbuffer = (zendbuffer >> 8);
+			cout << zendbuffer << endl;
 			writeComNumber(comp, zendbuffer);
-			cout << "Snelheid " << pf->speedKmh << " Kmh" << endl;
 			break;
 		default:
 			buffer = 'A';
